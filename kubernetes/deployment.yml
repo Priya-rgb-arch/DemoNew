@@ -3,20 +3,20 @@ kind: Deployment
 metadata:
   name: deployment-service
   labels:
-    app: java-webapp1
+    app: demonew
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: java-webapp1
+      app: demonew
   template:
     metadata:
       labels:
-        app: java-webapp1
+        app: demonew
     spec:
       containers:
-        - name: java-webapp1
-          image: sujinidocker/java-app:${{ github.run_number }}
+        - name: demonew
+          image: sriharipriya/demonew:${{ github.run_number }}
 
           ports: 
             - containerPort: 8080
@@ -24,13 +24,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: java-webapp1-loadbalancer-service
+  name: demonew-loadbalancer-service
   labels:
-    app: java-webapp1
+    app: demonew
 spec:
   type: LoadBalancer
   selector:
-    app: java-webapp1
+    app: demonew
   ports:
     - port: 8080
       targetPort: 8080
