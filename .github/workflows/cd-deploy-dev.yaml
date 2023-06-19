@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-    - 'main'
+    - 'master'
 
 jobs:
   build: 
@@ -13,8 +13,8 @@ jobs:
     
     runs-on: ubuntu-latest
     env:
-      DOCKER_HUB_USERNAME: sujinidocker # name of Docker Hub ID
-      IMAGE_NAME: java-app
+      DOCKER_HUB_USERNAME: sriharipriya # name of Docker Hub ID
+      IMAGE_NAME: demonew
       IMAGE_TAG: ${{ github.run_number }}
       
       CLUSTER_NAME: myAKSCluster
@@ -52,8 +52,8 @@ jobs:
         uses: Azure/aks-set-context@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          cluster-name: ${{ env.CLUSTER_NAME }}
-          resource-group: ${{ env.RESOURSE_GROUP }}
+          cluster-name: myAKSCluster
+          resource-group: myResourceGroup
       
       - name: Apply Kubernetes deployment
         uses: Azure/k8s-deploy@v1
@@ -62,116 +62,7 @@ jobs:
           manifests: |
             kubernetes/deployment.yml
           images: |
-            sujinidocker/java-app:${{ github.run_number }}
-            
- 
-  deploy-qa:
-    needs: [build, deploy-dev]
-    runs-on: ubuntu-latest
-    env:
-      DOCKER_HUB_USERNAME: sujinidocker # name of Docker Hub ID
-      IMAGE_NAME: java-app
-      IMAGE_TAG: ${{ github.run_number }}
-      
-      CLUSTER_NAME: myAKSCluster
-      RESOURSE_GROUP: myResourceGroup
-    
-    environment: qa
-    steps:
-      - name: Display the path
-        run: pwd
-        shell: bash
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        
-      - name: Download Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: mywebapp-artifact
-          path: ${{github.workspace}}
-         
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-        
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_REPOSITORY_PASSWORD }}
-          
-    
-
-        # Set the target AKS cluster..
-      - name: Deploy to AKS
-        uses: Azure/aks-set-context@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          cluster-name: ${{ env.CLUSTER_NAME }}
-          resource-group: ${{ env.RESOURSE_GROUP }}
-      
-      - name: Apply Kubernetes deployment
-        uses: Azure/k8s-deploy@v1
-        with:
-          namespace: qa
-          manifests: |
-            kubernetes/deployment.yml
-          images: |
-            sujinidocker/java-app:${{ github.run_number }} 
-            
-  deploy-prod:
-    needs: [build, deploy-dev, deploy-qa]
-    runs-on: ubuntu-latest
-    env:
-      DOCKER_HUB_USERNAME: sujinidocker # name of Docker Hub ID
-      IMAGE_NAME: java-app
-      IMAGE_TAG: ${{ github.run_number }}
-      
-      CLUSTER_NAME: myAKSCluster
-      RESOURSE_GROUP: myResourceGroup
-      
-    environment: prod
-    steps:
-      - name: Display the path
-        run: pwd
-        shell: bash
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        
-      - name: Download Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: mywebapp-artifact
-          path: ${{github.workspace}}
-         
-
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-        
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_REPOSITORY_PASSWORD }}
-          
-    
-
-        # Set the target AKS cluster..
-      - name: Deploy to AKS
-        uses: Azure/aks-set-context@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          cluster-name: ${{ env.CLUSTER_NAME }}
-          resource-group: ${{ env.RESOURSE_GROUP }}
-      
-      - name: Apply Kubernetes deployment
-        uses: Azure/k8s-deploy@v1
-        with:
-          namespace: prod
-          manifests: |
-            kubernetes/deployment.yml
-          images: |
-            sujinidocker/java-app:${{ github.run_number }}
+            sriharipriya/demonew:${{ github.run_number }}
             
       
             
